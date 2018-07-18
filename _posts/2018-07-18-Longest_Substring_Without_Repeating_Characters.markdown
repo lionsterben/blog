@@ -1,3 +1,12 @@
+---
+layout:     post
+title:      "leetcode001"
+subtitle:   " \"enjoy this world\""
+date:       2018-07-18 23:27:00
+author:     "Dawei"
+tags:
+    - leetcode
+---
 Longest Substring Without Repeating Characters
 ==
 ### The problem is in [here](https://leetcode.com/problems/longest-substring-without-repeating-characters/description/ )
