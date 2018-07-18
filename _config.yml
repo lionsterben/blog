@@ -11,7 +11,7 @@ baseurl: "/daweiblog"         # for example, '/blog' if your blog hosted on 'hos
 # SNS settings
 RSS: false
 weibo_username: lionsterben
-zhihu_username: lionsterben
+zhihu_username: fu-da-wei-51
 github_username: lionsterben
 #twitter_username:  huxpro
 #facebook_username:  huxpro
