@@ -1,5 +1,5 @@
 # Site settings
-title: Dawei Blog 12
+title: Dawei Blog
 SEOTitle: 大卫的博客 | D Blog
 header-img: img/home-bg.jpg
 email: f1412465878@gmail.com
@@ -80,7 +80,7 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 # Friends
 friends: [
     {
-        title: "Dawei Blog 23",
+        title: "Dawei Blog",
         href: "https://lionsterben.github.io/daweiblog"
     },{
         title: "Foo",
