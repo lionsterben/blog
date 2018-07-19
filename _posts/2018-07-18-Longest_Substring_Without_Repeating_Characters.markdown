@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "leetcode001"
-subtitle:   " \"enjoy this world\""
+subtitle:   "enjoy this world"
 date:       2018-07-18 23:27:00
 author:     "Dawei"
 header-img: img/forest_dream.jpg
