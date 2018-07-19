@@ -1,9 +1,10 @@
 ---
 layout:     post
 title:      "乌合之众总结与思考0103"
-subtitle:   " \"know this world\""
+subtitle:   " know this world"
 date:       2018-07-18 21:33:00
 author:     "Dawei"
+
 tags:
     - 思考感悟
 ---
