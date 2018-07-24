@@ -4,7 +4,7 @@ title:      "MapReduce: Simplified Data Processing on Large Clusters "
 subtitle:   "paper reading"
 date:       2018-07-24 16:50:00
 author:     "Dawei"
-header-image: img/planet_earth_4k.jpg
+header-img: img/planet_earth_4k.jpg
 tags:
     - 技术随想
 ---
