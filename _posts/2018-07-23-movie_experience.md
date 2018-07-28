@@ -4,6 +4,7 @@ title:      "walle, 熔炉， 釜山行"
 subtitle:   "fuck this world"
 date:       2018-07-20 14:41:00
 author:     "Dawei"
+header-img: img/starry_night_sky.jpg
 
 tags:
     - 思考感悟
