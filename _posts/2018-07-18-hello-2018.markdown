@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "Welcome to Dawei Blog"
-subtitle:   " \"Hello World, Hello Blog\""
+subtitle:   "Hello World, Hello Blog"
 date:       2018-07-18 17:04:00
 author:     "Dawei"
 tags:
