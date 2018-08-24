@@ -41,3 +41,6 @@ master需要做O（M+R）规划决定，O（M*R）存储状态空间需求（但
 - 支持跳过不能读取的记录 
 - master运行一个http server，支持直接从网页端看到运行情况、生成文件和错误信息
 - counter计数器，查看运行情况
+
+## 实验想法
+- map  phase和reduce phase都尽量调用所有机器，不存在在开始分为map machine和reduce machine，map task执行完毕结果刷到磁盘里，同时把位置通知master，master启动reduce machine，通过这些位置读取数据。
