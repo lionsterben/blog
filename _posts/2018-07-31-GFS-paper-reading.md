@@ -45,7 +45,6 @@ GFS提供一个近似普通文件系统接口，但是并不是标准API如POSIX
 
 ## 数据改变流程
 <br>GFS用Lease（租约）方法，也就是给众多副本中其中一个证书，证明它是primary，这个primary副本选定mutations的顺序，并推送给所有副本。1.client询问master哪一个chunkserver保存当前chunk的lease和其他副本的位置，如果没有lease的话，master挑一个给。2.master回复这些信息给client。client cache这些信息，只有当primary不可达或者没有lease时候，才需要重新获得。3.client push data给所有副本，发送这些数据可以以任意顺序。4.当所有副本接收到数据后，client会向primary发送写请求，primary对这些数据（很可能来自多个client）进行连续标号，之后按照序号进行apply mutation。5.primary发送写请求给所有其它副本，它们按照primary同样的顺序进行apply mutation。6.副本完成后回复primary表示它们已经完成。7.primary通知client完成。如果失败的话，很大可能是primary成功，这样的话重复3到7步。<br/>
-
 <br>GFS将控制流和数据流解耦了，控制流由client流向primary再流到all secondaries。数据流为了最大化利用带宽，使用chain式传输，每台机器会将数据传到当前网络拓扑离它最近的机器（还没有收到数据）。利用TCP传输，当收到数据时立即就可以发送出去了。<br/>
 
 ## Atomic Record Appends 
@@ -56,29 +55,20 @@ GFS提供一个近似普通文件系统接口，但是并不是标准API如POSIX
 
 ## MASTER OPERATION
 <br>master会执行所有namespace的操作，还有管理系统的chunk副本（决定chunk副本放置位置，保证chunk副本数量足够，重平衡chunk server负载，回收垃圾空间）。<br/>
-
 <br>许多master operation会需要很长时间：snapshot就需要撤销所有需要snapshot的chunk的lease，所以对这些namespace运用锁机制。GFS的namespace结构就是树形结构，map full pathnames to metadata。论文对读写锁的运用有详细的阐述，我就不举例子了。<br/>
-
 <br>副本放置问题实际上是data reliability、availability和网络带宽利用之间的tradeoff。<br/>
-
 <br>创建chunk副本有三个原因，创建chunk、重复制chunk、重平衡。创建一个chunk选取chunk副本时候，有三个考虑因素，1.将副本放在低于平均磁盘空间利用率的chunk server里。2.限制对同一chunk server在某个时间段的create次数。3.上一段要求。<br/>
-
 <br>重复制发生在副本数量小于规定数量（有各种各样的原因导致这个状况发生），重复制也有优先级，第一个是距离规定数量的大小，第二个优先活跃的文件chunk，第三个优先阻塞client进程。复制时候按照create的条件选择副本位置，同时为了防止流量将client跑崩，限制cluster整体和每个chunkserver的流量。<br/>
-
 <br>master会周期性地重平衡副本位置，标准和之前一样。总之，目标就是平衡所有chunk server的磁盘利用率。<br/>
 
 ## Garbage Collection
 <br>当文件被删除后，不会立即回收它们的物理存储空间，会等到在文件和chunk层级进行垃圾回收在进行。<br/>
-
 <br>当一个文件被删除后，master会立即log，file会被一个隐藏名字（利用删除时间戳标记）重命名，在master日常扫描文件系统namespace，会删除那些超时3天（可设置）的文件。这样操作可以在一定时间段内重新读取删除文件。对待chunk namespace同理，master会定期扫描过期chunk（无法被任一file访问到的chunk），删除它们的元数据，通过chunk server和master的心跳机制，要求chunkserver删除这些副本。<br/>
-
 <br>GFS利用chunk version number进行过期副本检测，每次对chunk进行lease赋予后，就增加chunk version number，master和最新的副本都会保存这个数字。master会通过chunkserver心跳机制发送的number判断是否过期，如果发送的数字比自身的还大，就说明master在赋予lease时候，chunkserver失效了，将这个副本作为最新的同步。master会在垃圾回收时候清除这些过期副本，在这之前，回复client chunk位置时当作它们不存在。这样做的一个好处时，master在回复client chunk副本位置时，会附带给version number，这样client在读取时候，就会校验一下，保证读到最新数据。<br/>
 
 ## FAULT TOLERANCE AND DIAGNOSIS
 <br>失败容忍性是分布式系统关键特性。其中几点在之前的系统概述都已经提及，简单总结一下。1.快速恢复，master和chunkserver。2.chunk副本。3.master副本。<br/>
-
 <br>数据完整性检测。数据完整性和TCP之类的蛮像，将每个chunk里的数据分为64KB的小块，每个小块都有一个32位的checksum，和元数据一样，这个数据会被master保存在内存里，并且用log永久保持。每次读取时候，chunk server都会计算需要读取的chunk的chunksum对照。checksum对于record append重度优化，每次加进去数据，只需要对加进去的block计算，write的话需要对所有被修改的数据重新计算。<br/>
-
 <br>分析工具。GFS大量记录machine的事件，打成log。GFS server记录chunkserver启动和下线，所有RPC请求和回复。这些log可以随时被删除，但是我们在不影响空间要求时，尽量保存它们。<br/>
 
 
