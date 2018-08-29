@@ -26,7 +26,7 @@ tags:
 <br>对于每个map task和reduce task master都会维护一个状态：未运行，运行中，已完成<br/>
 <br>master会定期Ping各个worker，如果worker失败的话，在它上面已完成的map task重设为未运行，正在运行的map task和reduce task都设置为未运行，全部重新运行。已完成的map task之所以要重运行是因为中间结果保存在worker里。<br/>
 <br>master失效，从保存点恢复（那为保存点之后的操作怎么办？也保存了吗？），或者直接重新执行job<br/>
-<br>当map task在worker A上失败后，之后又在worker B上运行，reexecution会通知所有在执行reduce task的worker，如果worker还没有从A上读取data，就直接从B上读取<br/>
+<br>当执行完map task的机器失效后，master在另一台机器上运行，reexecution会通知所有在执行reduce task的worker，如果worker还没有从A上读取data，就直接从B上读取<br/>
 <br>关于任务重复导致的结果文件一致性问题，map task重复，后完成的发消息给master，master直接忽略。reduce task重复，利用文件系统重命名操作的原子性，保证只有一份。<br/>
 # M和R选择
 master需要做O（M+R）规划决定，O（M*R）存储状态空间需求（但是要求容量很小），一般选择M使得单独任务处理数据规模在16MB到64MB中间，R是worker machine数量的几倍左右
