@@ -66,6 +66,33 @@ Goal: primary and backup should see interrupt at exactly the same point in   exe
 >  OK for TCP, since receivers ignore duplicate sequence numbers.  
    OK for writes to shared disk, since backup will write same data to same block #.
 
-<br>失败检测和恢复。当backup VM失败的时候，primary VM开始执行normal mode（不用发送log entry到logging channel）。当primary VM失效时，backup VM成为primary上线，但是需要一点时间来让它消费log buffer的log entries，在这之后，backup VM会从replay mode切换到normal mode，开始向外界执行output操作，当然为了识别谁是primary，需要硬件上支持通过MAC address识别。FT识别失败通过UDP心跳机制定期ping每个服务器和监控logging traffic（因为有timer interrupt，所以会定期发送log）。但是如果是网络连接中断，这会导致split-brain问题，两个VM都认为自己primary然后上线，论文通过对共享存储空间进行atomic test-and-set operation，只有能够成功的VM，才能够作为primary上线，剩下的那个需要自我降格位backup，不能的VM会一直尝试。注意如果shared storage不能够访问的话，那VM也自然都失效，因为shared disk也在这上面。另外一点，如果一个VM失败但是另个上线，上线的会为了恢复冗余性重启一个backup VM。<br/>
+<br/>
+<br>失败检测和恢复。当backup VM失败的时候，primary VM开始执行normal mode（不用发送log entry到logging channel）。当primary VM失效时，backup VM成为primary上线，但是需要一点时间来让它消费log buffer的log entries，在这之后，backup VM会从replay mode切换到normal mode，开始向外界执行output操作，当然为了识别谁是primary，需要硬件上支持通过MAC address识别。FT识别失败通过UDP心跳机制定期ping每个服务器和监控logging traffic（因为有timer interrupt，所以会定期发送log）。但是如果是网络连接中断，这会导致split-brain问题，两个VM都认为自己primary然后上线，论文通过对共享存储空间进行atomic test-and-set operation，只有能够成功的VM，才能够作为primary上线，剩下的那个需要自我降格为backup，不能的VM会一直尝试。注意如果shared storage不能够访问的话，那VM也自然都失效，因为shared disk也在这上面。另外一点，如果一个VM失败但是另个上线，上线的会为了恢复冗余性重启一个backup VM。<br/>
 
 ## FT实现细节
+<br>启动和重启FT VMs。需求是随时启动一个和primary一样状态的backup，论文只是介绍VMware的VMotion操作（用来VM迁移）可以改动一下用来复制primary VM，它会导致source VM变成logging mode，设置一个logging channel，然后被复制的VM变成replay mode。关于backup VM位置选择：因为所有的VM都运行在集群的服务器上，它们能够共享存储空间，所以选取任意一台服务器。VMware vSphere实现集群服务来维护管理和资源信息，集群服务会确定最佳backup VM位置，然后执行备份操作。<br/>
+<br>logging channel管理。logging的管理分为hypervisor维护的在primary和backup的log buffer，通过logging channel连接。primary和backup都尽可能快得将log entries写入和读出。主要问题在于primary将buffer写满了，这样primary不得不完全停止，backup的buffer空不是个问题，它停止就可以了，毕竟client不会直接于backup联系。导致primary buffer满的主要原因是因为backup消费log太慢，原因一在于其实服务器配置相似，服务器可能会运行太多VM。另一点不想backup落后primary太多的原因在于backup接替primary主要花费的时间就是失败检测时间+replay这些log的时间。所以，论文利用额外机制探测primary和backup之间相差的lag，如果一直太大，逐渐降低primary执行速度，相反如果lag逐渐缩小，就逐渐提高primary速度。<br/>
+<br>关于VM operation问题。一些特殊控制命令也需要打进log里（关机，调整资源）。一般来说，operation由primary发起。唯一primary和backup可以独立进行的操作是VMotion。关于这套系统的VMotion需要断开和另一方的连接，然后重连到目的地。对于VMotion需要所有I/O操作停止，对于primary很简单，等物理I/O结束就行。但是对backup有问题，因为backup要准确操作点执行primary操作，所以当backup要执行VMotion时候，backup发送请求给primary，要求它停止所有I/O操作。(有点小问题，可能是因为确定到Instruction的数值)<br/>
+<br>Disk I/O。因为对磁盘的操作是不堵塞的，所以可以并行，还有DMA操作同时对同一块disk进行操作。另外，disk I/O使用DMA技术，所以disk read和VM read会在同一块memory冲突，这两种情况都会导致不确定性。第一个问题是检测这种data race，然后按顺序执行。第二种问题论文给出方案是bounce buffer，当disk read或者写进disk时候，先传到bounce buffer，等到完成之后，在读到VM能够接触的内存或者刷进disk里。保证的是在相同的操作点看到memory的数据是一样的。
+>FT avoids this problem by not copying into guest memory while the
+primary or backup is executing. FT first copies the network packet or
+disk block into a private "bounce buffer" that the primary cannot
+access. When this first copy completes, the FT hypervisor interrupts
+the primary so that it is not executing. FT records the point at which
+it interrupted the primary (as with any interrupt). Then FT copies the
+bounce buffer into the primary's memory, and after that allows the
+primary to continue executing. FT sends the data to the backup on the
+log channel. The backup's FT interrupts the backup at the same
+instruction as the primary was interrupted, copies the data into the
+backup's memory while the backup is into executing, and then resumes
+the backup.  
+The effect is that the network packet or disk block appears at exactly
+the same time in the primary and backup, so that no matter when they
+read the memory, both see the same data.
+
+最后一点是primary失败，那些diskI/O怎么处理，因为backup不知道是否成功，论文给出的方案是backup全部重新执行。（因为是幂等的）<br/>
+<br>网络I/O。论文抛弃之前采用的直接异步更新网络I/O设备状态，因为这会带来更多的不确定性。论文采用guest给hypervisor trap的方式使得VM log这些update（去除不确定性）。为了缓解这个问题，需要尽可能少的trap（几个包并在一起trap），hypervisor也可以打包几个在给VM一个中断。第二个优化就是在primary发送output entry和接受回执时候不切换上下文，尽量加速这个过程，让网络包尽快发出去。<br/>
+
+## 替换设计
+<br>基础设计一直是shared disk，其实也可以用分离的磁盘。在shared disk时候，backup不能写（disk算是外部output），而且失败发生时，disk是可以直接用的。分离磁盘，backup需要直接写磁盘了，但是由于disk属于backup内部状态，所以不用遵循output rule了，两份磁盘必须显示同步当FT被启用时，而且失败时也需要重新同步，VMotion需要传递disk state。关于split-brain问题，只能求助第三方服务器，谁节点多谁是primary。<br/>
+<br>在原始设计里，backup从来不会从disk里读取数据（shared and non-shared），都是primary通过logging channel传给backup。所以一种设计时backup直接读取磁盘，这可以大幅减少logging channel的流量，但是会面对多个巧妙的问题。第一，这会减慢backup执行速度，因为当执行到primary完成的执行点时，backup必须等到自己的read完成，才能执行下一条指令。2.需要执行一些其它操作来应对失败，如果backup失败、primary成功，backup需要一直重复直到成功，如果primary失败、backup成功，这时候primary里的目标位置内存需要通过logging channel传输。3.针对共享磁盘，防止出现primary读之后迅速写，导致backup读出现错误，需要更多操作保证。<br/>
