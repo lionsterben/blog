@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "In Search of an Understandable Consensus Algorithm (Extended Version)"
+title:      "In Search of an Understandable Consensus Algorithm (Extended Version) Part_1"
 subtitle:   "paper reading"
 date:       2018-09-03 15:57::00
 author:     "Dawei"
