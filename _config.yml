@@ -22,7 +22,7 @@ github_username: lionsterben
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
 highlighter: rouge
 permalink: pretty
-paginate: 10
+paginate: 100
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 
@@ -66,7 +66,7 @@ duoshuo_share: true                     # set to false if you want to use Commen
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "pursue real freedom"
+sidebar-about-description: "Pursue Real Freedom"
 sidebar-avatar: img/chris2.jpg    # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
@@ -81,7 +81,7 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 friends: [
     {
         title: "Dawei Blog",
-        href: "https://lionsterben.github.io/daweiblog"
+        href: "https://lionsterben.github.io/lionsterben"
     },{
         title: "Foo",
         href: "#"
