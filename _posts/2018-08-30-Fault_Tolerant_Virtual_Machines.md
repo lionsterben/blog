@@ -2,7 +2,7 @@
 layout:     post
 title:      "The Design of a Practical System for Fault-Tolerant Virtual Machines"
 subtitle:   "paper reading"
-date:       2018-08-30 19:02::00
+date:       2018-08-30 19:02:00
 author:     "Dawei"
 header-img: img/planet_earth_4k.jpg
 tags:
