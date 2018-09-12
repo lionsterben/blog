@@ -6,7 +6,7 @@ date:       2018-09-03 15:57:00
 author:     "Dawei"
 header-img: img/planet_earth_4k.jpg
 tags:
-    - 技术随想
+    - paper reading
 ---
 
 Raft是分布式系统中的共识算法，属于分布式系统里的基础，通过共识算法才能保证服务器失败容忍，即只要majority服务器还存活，系统就可以一直运行下去。Raft属于Paxo针对理解性的改良版，曾经我花了一上午时间看Paxo协议，结果只记得将军、间谍之类的东西了（误，这篇Raft写得更为详尽和清晰。由于Raft涉及太多细节性内容，在一篇博文很难解释清楚，所以本篇文章只将论文框架写出，具体的内容感兴趣的小伙伴可以直接读这篇论文为好。论文主要将raft分为leader election、log replication和safety三部分阐述，我也就分这几部分开始说。

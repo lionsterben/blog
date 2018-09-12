@@ -7,7 +7,7 @@ author:     "Dawei"
 header-img: img/starry_night_sky.jpg
 
 tags:
-    - 思考感悟
+    - leisure life
 ---
 walle, 熔炉和釜山行
 ==

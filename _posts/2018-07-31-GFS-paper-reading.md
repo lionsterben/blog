@@ -6,7 +6,7 @@ date:       2018-07-31 10:48:00
 author:     "Dawei"
 header-img: img/planet_earth_4k.jpg
 tags:
-    - 技术随想
+    - paper reading
 ---
 
 ## 文件系统需求

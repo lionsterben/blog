@@ -6,7 +6,7 @@ date:       2018-07-18 21:33:00
 author:     "Dawei"
 
 tags:
-    - 思考感悟
+    - leisure life
 ---
 群体的观念、推理能力和想象力 
 ==

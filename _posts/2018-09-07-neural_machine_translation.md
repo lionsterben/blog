@@ -6,7 +6,7 @@ date:       2018-09-07 17:21:00
 author:     "Dawei"
 header-img: img/nlp.jpg
 tags:
-    - 技术随想
+    - lecture study
 ---
 
 本文简单说一下NMT的机理和各种fancy model、trick。主要分析Sequence to Sequence Learning
