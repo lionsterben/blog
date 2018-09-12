@@ -25,6 +25,10 @@ description: ""
 <hr>
 {% endfor %}
 
+{% for post in paginator.posts %}
+    <a href="{{ post.url }}">{{ post.title }}</a>
+{% endfor %}
+
 <!-- Pager -->
 {% if paginator.total_pages > 1 %}
 <ul class="pager">
