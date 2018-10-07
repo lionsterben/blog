@@ -6,7 +6,7 @@ date:       2018-10-04 11:08:00
 author:     "Dawei"
 header-img: img/nlp.jpg
 tags:
-    - lecture study
+    - paper reading
 ---
 ## 概述
 <br>本篇论文是Facebook AI Research使用纯CNN网络来进行机器翻译，很棒的思路，同时还diss了一下LSTM的思路（我觉得是冲着Google去的，结果Google过一段时间就放出attention is all you need，哈哈），关于传统RNN的缺陷我在这篇[博客](https://lionsterben.github.io/lionsterben/2018/09/17/attention_is_all_you_need/)里提过了，就不多说了。主体框架也是包括encoder和decoder两部分构成，但是两部分都是由相同的layer（CNN+non-linearity）stack而成，每层decoder layer都应用attention机制。<br/>
