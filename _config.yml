@@ -78,7 +78,7 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 
 
 
-Friends
+#Friends
 friends: [
     {
         title: "Dawei Blog",
