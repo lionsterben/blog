@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "Closure Summary "
-subtitle:   "closure summary"
+subtitle:   "programming language"
 date:       2018-07-29 17:35:00
 author:     "Dawei"
 header-img: img/planet_earth_4k.jpg
