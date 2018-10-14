@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "leetcode001"
+title:      "leetcode1"
 subtitle:   "enjoy this world"
 date:       2018-07-18 23:27:00
 author:     "Dawei"
