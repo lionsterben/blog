@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "ELMO and BERT"
+title:      "ELMo and BERT"
 subtitle:   "paper reading"
 date:       2018-10-25 13:31:00
 author:     "Dawei"
