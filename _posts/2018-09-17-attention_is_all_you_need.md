@@ -8,6 +8,17 @@ header-img: img/nlp.jpg
 tags:
     - paper reading
 ---
+<head>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+            }
+        });
+    </script>
+</head>
 
 ## 概述
 <br>论文主要提出用于机器翻译新的模型。机器翻译分为encode和decode部分，encoder对source sentence进行编码，在RNN一般是最后输出的hidden state。decode是对encode部分输出的hidden state进行串行解码，后来引入attention机制，对encode中每个hidden state都引入计算。CNN用于机器翻译我在另一篇博客里介绍吧。可以看出RNN虽然符合人类的直觉，但是天生不符合GPU并行计算的特点，所以训练速度很慢。谷歌这篇论文对encode和decode部分，直接放弃原始的rnn网络，使用self attention进行编码和解码，非常interesting。<br/>
