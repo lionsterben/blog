@@ -24,3 +24,6 @@ Raft是分布式系统中的共识算法，属于分布式系统里的基础，�
 <br>在正常操作下，副本和leader的log会一直保持一致的，但是如果leader crash，再上线后，就没有全部的log了，这时候新leader就需要对副本进行覆写和删除，和上一节所说的一样，通过leader的nextIndex找到副本和leader一致的最后一个entry，然后把leader之后的log全部复制进去。<br/>
 <br>第三个要求是leader completeness，如果一个entry在一个term被commit，那么在之后所有高于这个term的leader都应该有这个entry，具体证明比较复杂，感兴趣的同学可以直接看论文5.4.3节的证明，大致意思是commit要求majority，candidate变成leader也要求majority，这其中必然至少有一个server重复，所以commit log必然一直在leader里面继承。第四个要求是state machine safety，意思是如果一个服务器在指定index apply一个entry，那么其它server必然在指定index apply相同的entry。因为apply entry之前必须要commit，这就确定之后的leader必然有这个entry，保证即使在之后的term apply，在相同的位置也是相同的值。<br/>
 <br>还有一个注意的点，每次leader commit entry时候，不会commit之前term的entry，之后commit当前的entry。因为这和判断uptodate会产生矛盾，会出现commit log消失在之后的leader的情况，，详见论文Figure 8.<br/>
+
+## persist
+<br>lab 2C是最简单的了，在raft协议运行期间对server状态进行存储，然后在它们失效后从磁盘里恢复这些状态。raft论文给出需要存储currentTerm, voteFor, log,具体实现的时候，每个method如果对rf server的这三个状态进行修改的话，都需要重新写入，在启动server，也就是make的时候，读入最新的状态就行了，很简单的逻辑。<br/>
