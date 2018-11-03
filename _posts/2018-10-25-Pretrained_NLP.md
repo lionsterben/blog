@@ -8,6 +8,7 @@ header-img: img/planet_earth_4k.jpg
 tags:
     - paper reading
 ---   
+
 <br>在NLP界，迁移学习不像cv那么普遍，针对每个任务，不同学者会提出不同的模型进行处理，最多的是在word embedding层使用相同的word vector，但是这些embedding不能进行词语的消歧义，即在不同语境下同一个词语应该表示成不同的意思，ELMO就是通过在大规模无监督预料上训练提取句子的词embedding，再喂进下游任务来解决这个问题。但是这种方式和之前的pretraining word vector相同，只是在input层增强表示能力，有人指出其实各种各样的NLP任务核心都应该是对语言本身建模，就想cv界对图像进行抽取特征，于是BERT模型诞生，训练出能够表示语言word，syntax，sentence各种层面意义的模型，对于各种nlp task，在最后加一层softmax layer就可以达到SOTA的效果，令人叹为观止。所以这篇博客就主要介绍Deep contextualized word representations和BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding这两篇论文。<br/>
 
 # Deep contextualized word representations
