@@ -6,7 +6,7 @@ email: f1412465878@gmail.com
 description: "fuck me"
 keyword: ""
 url: "https://lionsterben.github.io"              # your host, for absolute URL
-baseurl: "/lionsterben"         # for example, '/blog' if your blog hosted on 'host/blog'
+baseurl: "/blog"         # for example, '/blog' if your blog hosted on 'host/blog'
 
 # SNS settings
 RSS: false
@@ -82,7 +82,7 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 friends: [
     {
         title: "Dawei Blog",
-        href: "https://lionsterben.github.io/lionsterben"
+        href: "https://lionsterben.github.io/blog"
     },{
         title: "Foo",
         href: "#"
