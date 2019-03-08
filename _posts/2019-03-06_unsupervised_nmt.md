@@ -2,7 +2,7 @@
 layout:     post
 title:      "UNSUPERVISED MACHINE TRANSLATION USING MONOLINGUAL CORPORA ONLY"
 subtitle:   "paper reading"
-date:       2018-03-06 11:45:00
+date:       2019-03-06 11:45:00
 author:     "Dawei"
 header-img: img/planet_earth_4k.jpg
 tags:
