@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "UNSUPERVISED MACHINE TRANSLATION USING MONOLINGUAL CORPORA ONLY"
+title:      "Unsupervised Machine Translation Using Monolingual Corpora Only"
 subtitle:   "paper reading"
 date:       2019-03-06 11:45:00
 author:     "Dawei"
